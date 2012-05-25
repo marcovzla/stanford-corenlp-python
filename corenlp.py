@@ -43,6 +43,12 @@ import jsonrpc
 import pexpect
 
 
+def abspath(*relpath):
+    """Turns a relative path into an absolute path using
+    the absolute path of this file."""
+    currdir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(currdir, *relpath)
+
 def remove_id(word):
     """Removes the numeric suffix from the parsed recognized words: e.g. 'word-2' > 'word' """
     return word.count("-") == 0 and word or word[0:word.rindex("-")]
@@ -163,16 +169,16 @@ class StanfordCoreNLP(object):
        
         # if CoreNLP libraries are in a different directory,
         # change the corenlp_path variable to point to them
-        corenlp_path = "stanford-corenlp-2012-04-09/"
+        corenlp_path = abspath("stanford-corenlp-2012-04-09")
         
         java_path = "java"
         classname = "edu.stanford.nlp.pipeline.StanfordCoreNLP"
         # include the properties file, so you can change defaults
         # but any changes in output format will break parse_parser_results() 
-        props = "-props default.properties" 
+        props = "-props %s" % abspath("default.properties")
 
         # add and check classpaths
-        jars = [corenlp_path + jar for jar in jars]
+        jars = [os.path.join(corenlp_path, jar) for jar in jars]
         for jar in jars:
             if not os.path.exists(jar):
                 print "Error! Cannot locate %s" % jar
