@@ -1,0 +1,2 @@
+include README
+recursive-include stanford-corenlp-2012-04-09 *
